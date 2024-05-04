@@ -75,8 +75,12 @@ def findLink(html):
 
 #Function to check if it is the actual target
 def target(html):
-    allText = bs.text
-    #Check for tags for the format
+    headings = html.find_all('h2')
+    #Check for heading
+    for heading in headings:
+        if heading.get_text().strip() == 'Permanent Faculty':
+            return True
+    return False
 
 #The actual crawler based on pseudocode
 def crawlerThread(frontier):
