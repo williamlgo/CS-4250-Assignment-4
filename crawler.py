@@ -54,16 +54,44 @@ class Frontier:
     def done(self):
         return len(self.queue) == 0
 
+#If it is a page, store the page in the db
+def storePage(url, html, db):
+    page = {"url": url, "html": html}
+    professors.insert_one(page)
+
+#Getting the HTML
+def getHTML(url):
+    openURL = urllib.request.urlopen(url)
+    html = openURL.read()
+    return html
+
+def findLink(html):
+    links = html.find_all('a', href=True)
+    linksList = []
+    for link in links:
+        url = link['href']
+        linksList.append(url)
+    return linksList
+
 #Function to check if it is the actual target
 def target(html):
     allText = bs.text
-
-
+    #Check for tags for the format
 
 #The actual crawler based on pseudocode
 def crawlerThread(frontier):
     while not frontier.done():
         url = frontier.nextURL()
+        #Check if what is grabbed is a url
+        if url is not None:
+            html = getHTML(html)
+            storePage(url, html)
+            if target(html):
+                frontier.queue.clear()
+            else:
+                links = findLink(html)
+                for link in links:
+                    frontier.addURL(link)
 
 def main(): 
     starting_url = 'https://www.cpp.edu/sci/computer-science/'
